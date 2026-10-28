@@ -2,184 +2,696 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NodeWise | Kubernetes Capacity Planner</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-      color: #f4f5ff;
-      background: #0b1020;
-    }
-    .container { max-width: 1100px; margin: auto; padding: 24px; }
-    header { display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 24px; font-weight: 800; }
-    .logo span { color: #8d8aff; }
-    .tag { color: #8ee7c7; font-size: 12px; }
-    .hero { padding: 65px 0 35px; }
-    .hero h1 { font-size: clamp(36px, 6vw, 62px); line-height: 1.1; }
-    .hero h1 span { color: #9a8cff; }
-    .hero p { color: #aab6d0; line-height: 1.6; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .card {
-      background: #172039;
-      border: 1px solid #303c5b;
-      border-radius: 20px;
-      padding: 25px;
-    }
-    label { display: block; margin: 18px 0 8px; color: #c7d1e8; }
-    select, input[type=number] {
-      width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      border: 1px solid #495675;
-      background: #0c1427;
-      color: white;
-      font-size: 16px;
-    }
-    input[type=range] { width: 100%; accent-color: #9a8cff; }
-    .stats { display: flex; gap: 12px; margin-top: 20px; }
-    .stat { flex: 1; padding: 16px; background: #0c1427; border-radius: 12px; }
-    .stat small { color: #9eacc9; display: block; }
-    .stat strong { font-size: 26px; }
-    .result { font-size: 80px; font-weight: 800; color: #9c96ff; }
-    .badge { display: inline-block; padding: 10px; border-radius: 10px; background: #204443; color: #8fe9ce; }
-    .bar { height: 12px; background: #0c1427; border-radius: 20px; overflow: hidden; }
-    .fill { height: 100%; width: 0; background: linear-gradient(90deg,#647eff,#b18bff); }
-    .hint { color: #9eacc9; font-size: 13px; line-height: 1.6; }
-    footer { margin-top: 50px; color: #8795b1; font-size: 13px; }
-    @media(max-width: 700px) {
-      .grid { grid-template-columns: 1fr; }
-      .result { font-size: 64px; }
-      .hero { padding-top: 45px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NodeWise | Kubernetes Capacity Planner</title>
+
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0b1020;
+  --panel: #172039;
+  --border: #303c5b;
+  --text: #f4f5ff;
+  --muted: #aab6d0;
+  --purple: #a394ff;
+  --green: #6ee7b7;
+  --red: #fb7185;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+main {
+  max-width: 1150px;
+  margin: auto;
+  padding: 22px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.logo span { color: var(--purple); }
+
+.tag {
+  color: var(--green);
+  font-size: 12px;
+}
+
+.hero { padding: 45px 0 25px; }
+
+h1 {
+  font-size: clamp(32px, 6vw, 56px);
+  line-height: 1.1;
+  margin: 0 0 14px;
+}
+
+h1 span { color: var(--purple); }
+
+h2 {
+  margin-top: 0;
+  font-size: 21px;
+}
+
+p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px;
+  min-width: 0;
+}
+
+label {
+  display: block;
+  margin: 16px 0 7px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+input, select {
+  display: block;
+  width: 100%;
+  background: #0e172b;
+  border: 1px solid #425070;
+  border-radius: 10px;
+  color: white;
+  font: inherit;
+  padding: 12px;
+}
+
+input:focus, select:focus {
+  outline: 2px solid var(--purple);
+}
+
+input[type="range"] {
+  padding: 0;
+  accent-color: var(--purple);
+}
+
+small { color: var(--muted); }
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.stat {
+  background: #101a30;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 25px;
+  margin-top: 5px;
+}
+
+.big {
+  font-size: 65px;
+  font-weight: 800;
+  color: var(--green);
+  line-height: 1.2;
+}
+
+.bar {
+  background: #0e172b;
+  height: 12px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 8px 0 18px;
+}
+
+.fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #8b80ff, #6ee7b7);
+  transition: width .2s;
+}
+
+.result {
+  padding: 16px;
+  background: #101a30;
+  border-radius: 12px;
+  margin-top: 15px;
+}
+
+.ok { color: var(--green); }
+.bad { color: var(--red); }
+.hidden { display: none; }
+.full { grid-column: 1 / -1; }
+
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #0e172b;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media(max-width: 750px) {
+  .grid { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .hero { padding-top: 30px; }
+  .big { font-size: 54px; }
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <header>
-      <div class="logo">⬡ Node<span>Wise</span></div>
-      <div class="tag">FREE • OPEN SOURCE</div>
-    </header>
+<main>
+<header>
+  <div class="logo">⬡ Node<span>Wise</span></div>
+  <div class="tag">KUBERNETES CAPACITY LAB</div>
+</header>
 
-    <section class="hero">
-      <h1>Find the right node.<br><span>Fit more pods.</span></h1>
-      <p>Estimate Kubernetes pod capacity on AWS EC2 instances.
-         No AWS account or credentials required.</p>
-    </section>
+<section class="hero">
+  <h1>Find the right node.<br><span>Fit more pods.</span></h1>
+  <p>
+    Explore EC2 capacity, Kubernetes scheduling,
+    resource requests, and out-of-memory failures.
+  </p>
+</section>
 
-    <main class="grid">
-      <section class="card">
-        <h2>⚙️ Configure your node</h2>
+<div class="grid">
 
-        <label for="instance">EC2 instance type</label>
-        <select id="instance">
-          <option value="2,8">t3.large — 2 vCPU / 8 GiB</option>
-          <option value="4,16" selected>m5.xlarge — 4 vCPU / 16 GiB</option>
-          <option value="8,32">m5.2xlarge — 8 vCPU / 32 GiB</option>
-          <option value="8,32">m6i.2xlarge — 8 vCPU / 32 GiB</option>
-          <option value="8,64">r6i.2xlarge — 8 vCPU / 64 GiB</option>
-          <option value="8,16">c6i.2xlarge — 8 vCPU / 16 GiB</option>
-        </select>
+  <section class="card">
+    <h2>☁️ EC2 Node Configuration</h2>
 
-        <div class="stats">
-          <div class="stat"><small>vCPUs</small><strong id="vcpu">4</strong></div>
-          <div class="stat"><small>Memory</small><strong id="ram">16 GiB</strong></div>
-        </div>
+    <label for="family">Instance family</label>
+    <select id="family"></select>
 
-        <label for="cpu">Pod CPU request (millicores)</label>
-        <input id="cpu" type="number" min="1" value="500">
+    <label for="search">Search instance type</label>
+    <input id="search" placeholder="Example: m5, r6i, c6i">
 
-        <label for="memory">Pod memory request (MiB)</label>
-        <input id="memory" type="number" min="1" value="512">
+    <label for="instance">Instance type</label>
+    <select id="instance"></select>
 
-        <label for="reserve">Illustrative system reserve: <span id="reserveValue">15%</span></label>
-        <input id="reserve" type="range" min="0" max="35" step="5" value="15">
+    <p id="catalogStatus">Loading EC2 instance data...</p>
 
-        <p class="hint">The reserve is a simplified estimate, not actual EKS node allocatable capacity.</p>
-      </section>
+    <div class="stats">
+      <div class="stat">
+        <small>Node CPU</small>
+        <strong id="vcpu">—</strong>
+      </div>
+      <div class="stat">
+        <small>Node memory</small>
+        <strong id="ram">—</strong>
+      </div>
+    </div>
 
-      <section class="card">
-        <h2>📊 Capacity estimate</h2>
-        <div class="result" id="pods">0</div>
-        <p>Estimated application pods per node</p>
-        <div class="badge" id="bottleneck">Calculating…</div>
+    <label for="mode">Capacity mode</label>
+    <select id="mode">
+      <option value="estimate">Estimated allocatable</option>
+      <option value="actual">Actual allocatable</option>
+    </select>
 
-        <label>CPU utilization: <span id="cpuPercent">0%</span></label>
-        <div class="bar"><div class="fill" id="cpuBar"></div></div>
+    <div id="estimateFields">
+      <label for="reserve">
+        System reserve: <span id="reserveValue">15%</span>
+      </label>
+      <input id="reserve" type="range"
+        min="0" max="35" value="15">
+      <small>
+        Simplified estimate. Real Kubernetes allocatable
+        resources depend on node configuration.
+      </small>
+    </div>
 
-        <label>Memory utilization: <span id="memPercent">0%</span></label>
-        <div class="bar"><div class="fill" id="memBar"></div></div>
+    <div id="actualFields" class="hidden">
+      <label for="allocCpu">Allocatable CPU (m)</label>
+      <input id="allocCpu" type="number" min="1" value="3800">
 
-        <div class="stats">
-          <div class="stat"><small>CPU-based fit</small><strong id="cpuFit">0</strong></div>
-          <div class="stat"><small>Memory-based fit</small><strong id="memFit">0</strong></div>
-        </div>
+      <label for="allocMem">Allocatable memory (MiB)</label>
+      <input id="allocMem" type="number" min="1" value="14000">
+    </div>
+  </section>
 
-        <p class="hint">Actual scheduling also depends on max-pods, networking, DaemonSets, existing workloads, and other constraints.</p>
-      </section>
-    </main>
+  <section class="card">
+    <h2>📦 Pod Capacity Calculator</h2>
 
-    <footer>NodeWise • Built for DevOps learning • Estimates are not production guarantees</footer>
-  </div>
+    <label for="podCpu">New pod CPU request (m)</label>
+    <input id="podCpu" type="number" min="1" value="500">
 
-  <script>
-    const get = id => document.getElementById(id);
+    <label for="podMem">New pod memory request (MiB)</label>
+    <input id="podMem" type="number" min="1" value="512">
 
-    function calculate() {
-      const [vcpu, ram] = get("instance").value.split(",").map(Number);
-      const cpu = Number(get("cpu").value);
-      const memory = Number(get("memory").value);
-      const reserve = Number(get("reserve").value);
+    <label for="usedCpu">Existing CPU requests (m)</label>
+    <input id="usedCpu" type="number" min="0" value="0">
 
-      get("vcpu").textContent = vcpu;
-      get("ram").textContent = ram + " GiB";
-      get("reserveValue").textContent = reserve + "%";
+    <label for="usedMem">Existing memory requests (MiB)</label>
+    <input id="usedMem" type="number" min="0" value="0">
 
-      if (!Number.isFinite(cpu) || !Number.isFinite(memory) ||
-          cpu <= 0 || memory <= 0) {
-        get("pods").textContent = "—";
-        get("bottleneck").textContent = "Enter valid positive pod requests";
-        ["cpuFit", "memFit", "cpuPercent", "memPercent"].forEach(id => {
-          get(id).textContent = "—";
-        });
-        get("cpuBar").style.width = "0%";
-        get("memBar").style.width = "0%";
-        return;
+    <label for="usedPods">Existing pods on node</label>
+    <input id="usedPods" type="number" min="0" value="0">
+
+    <label for="maxPods">Node maximum pods</label>
+    <input id="maxPods" type="number" min="1" value="110">
+
+    <div class="result">
+      <small>Additional pods that fit</small>
+      <div class="big" id="pods">—</div>
+      <div id="bottleneck"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <small>CPU-based fit</small>
+        <strong id="cpuFit">—</strong>
+      </div>
+      <div class="stat">
+        <small>Memory-based fit</small>
+        <strong id="memFit">—</strong>
+      </div>
+    </div>
+
+    <small>CPU requested after placing estimated pods</small>
+    <div class="bar"><div class="fill" id="cpuBar"></div></div>
+    <small id="cpuPercent">0%</small>
+
+    <p></p>
+    <small>Memory requested after placing estimated pods</small>
+    <div class="bar"><div class="fill" id="memBar"></div></div>
+    <small id="memPercent">0%</small>
+  </section>
+
+  <section class="card">
+    <h2>🚦 Pod Scheduling Simulator</h2>
+    <p>
+      Check whether one more pod can fit on this node.
+      The simulator uses requests, not live usage.
+    </p>
+
+    <div class="result" id="scheduleResult">
+      Loading...
+    </div>
+
+    <p>
+      <small>
+        Kubernetes checks all eligible nodes.
+        A failure on one node does not necessarily
+        mean the pod will remain Pending.
+      </small>
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>💥 OOMKilled Simulator</h2>
+
+    <p>
+      A container can exceed its own memory limit even
+      when the node has free RAM.
+    </p>
+
+    <label for="limit">Container memory limit (MiB)</label>
+    <input id="limit" type="number" min="1" value="1024">
+
+    <label for="usage">Container memory usage (MiB)</label>
+    <input id="usage" type="number" min="0" value="1200">
+
+    <div class="result" id="oomResult"></div>
+
+    <p>
+      <small>
+        This illustrates memory-limit breaches.
+        Actual OOM behavior depends on runtime conditions.
+      </small>
+    </p>
+  </section>
+
+  <section class="card full">
+    <h2>🛠️ Kubernetes Troubleshooting</h2>
+
+    <p>Check why a pod is Pending:</p>
+    <pre>kubectl describe pod &lt;pod-name&gt;</pre>
+
+    <p>Check node allocatable resources:</p>
+    <pre>kubectl describe node &lt;node-name&gt;</pre>
+
+    <p>Check container termination reason:</p>
+    <pre>kubectl get pod &lt;pod-name&gt; -o yaml</pre>
+
+    <small>
+      Scheduling can also fail due to taints, affinity,
+      topology constraints, storage, and other policies.
+    </small>
+  </section>
+
+</div>
+
+<footer>
+  NodeWise • Educational Kubernetes capacity planner
+  • EC2 specifications loaded from instances.json
+</footer>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let catalog = {};
+
+async function loadInstances() {
+  try {
+    const response = await fetch("./instances.json");
+
+    if (!response.ok) {
+      throw new Error(
+        "Failed to load instances.json: HTTP " + response.status
+      );
+    }
+
+    const instances = await response.json();
+
+    if (!Array.isArray(instances)) {
+      throw new Error("instances.json must contain an array");
+    }
+
+    const nextCatalog = {};
+
+    for (const item of instances) {
+      if (!item || typeof item.instanceType !== "string") {
+        continue;
       }
 
-      const cpuCapacity = vcpu * 1000 * (1 - reserve / 100);
-      const memCapacity = ram * 1024 * (1 - reserve / 100);
+      const type = item.instanceType.trim();
+      const vcpu = Number(item.vcpus);
+      const memoryMiB = Number(item.memoryMiB);
 
-      const cpuFit = Math.floor(cpuCapacity / cpu);
-      const memFit = Math.floor(memCapacity / memory);
-      const pods = Math.min(cpuFit, memFit);
+      if (!type.includes(".") ||
+          !Number.isFinite(vcpu) ||
+          !Number.isFinite(memoryMiB) ||
+          vcpu <= 0 || memoryMiB <= 0) {
+        continue;
+      }
 
-      const cpuPercent = 100 * pods * cpu / (vcpu * 1000);
-      const memPercent = 100 * pods * memory / (ram * 1024);
+      const family = type.split(".")[0];
 
-      get("pods").textContent = pods.toLocaleString();
-      get("cpuFit").textContent = cpuFit.toLocaleString();
-      get("memFit").textContent = memFit.toLocaleString();
+      if (!nextCatalog[family]) {
+        nextCatalog[family] = {};
+      }
 
-      get("bottleneck").textContent =
-        cpuFit === memFit ? "⚖️ CPU and memory equally limiting" :
-        cpuFit < memFit ? "⚡ CPU is the bottleneck" :
-        "🧠 Memory is the bottleneck";
-
-      get("cpuPercent").textContent = cpuPercent.toFixed(1) + "%";
-      get("memPercent").textContent = memPercent.toFixed(1) + "%";
-      get("cpuBar").style.width = cpuPercent + "%";
-      get("memBar").style.width = memPercent + "%";
+      nextCatalog[family][type] = [
+        vcpu,
+        memoryMiB / 1024
+      ];
     }
 
-    ["instance", "cpu", "memory", "reserve"].forEach(id => {
-      get(id).addEventListener("input", calculate);
+    if (!Object.keys(nextCatalog).length) {
+      throw new Error("No valid EC2 instance records found");
+    }
+
+    catalog = nextCatalog;
+
+    $("family").innerHTML = "";
+
+    const families = Object.keys(catalog).sort();
+
+    families.forEach(family => {
+      $("family").add(new Option(family, family));
     });
 
+    $("family").value = catalog.m5 ? "m5" : families[0];
+
+    $("catalogStatus").textContent =
+      `Loaded ${instances.length} JSON records`;
+
+    fillInstances();
+
+  } catch (error) {
+    console.error(error);
+
+    $("catalogStatus").textContent =
+      "Unable to load EC2 instance catalog.";
+
+    $("instance").innerHTML =
+      '<option value="">Catalog unavailable</option>';
+
+    $("pods").textContent = "—";
+    $("scheduleResult").textContent =
+      "Could not load EC2 instance specifications.";
+  }
+}
+
+function fillInstances() {
+  const family = $("family").value;
+  const search = $("search").value.toLowerCase().trim();
+  const previous = $("instance").value;
+
+  $("instance").innerHTML = "";
+
+  if (!catalog[family]) {
     calculate();
-  </script>
+    return;
+  }
+
+  for (const [name, specs] of Object.entries(catalog[family])) {
+    if (name.toLowerCase().includes(search)) {
+      $("instance").add(
+        new Option(
+          `${name} — ${specs[0]} vCPU / ${specs[1]} GiB`,
+          name
+        )
+      );
+    }
+  }
+
+  const names = Array.from($("instance").options)
+    .map(option => option.value);
+
+  if (names.includes(previous)) {
+    $("instance").value = previous;
+  } else if (names.includes("m5.xlarge")) {
+    $("instance").value = "m5.xlarge";
+  }
+
+  calculate();
+}
+
+function number(id) {
+  const value = $(id).value.trim();
+  return value === "" ? NaN : Number(value);
+}
+
+function calculate() {
+  const family = $("family").value;
+  const instance = $("instance").value;
+  const actual = $("mode").value === "actual";
+
+  $("estimateFields").classList.toggle("hidden", actual);
+  $("actualFields").classList.toggle("hidden", !actual);
+
+  if (!catalog[family] || !catalog[family][instance]) {
+    $("vcpu").textContent = "—";
+    $("ram").textContent = "—";
+    $("pods").textContent = "—";
+    $("bottleneck").textContent = "No matching instance.";
+    $("scheduleResult").textContent =
+      "Select an EC2 instance.";
+    $("cpuFit").textContent = "—";
+    $("memFit").textContent = "—";
+    $("cpuBar").style.width = "0%";
+    $("memBar").style.width = "0%";
+    $("cpuPercent").textContent = "—";
+    $("memPercent").textContent = "—";
+    return;
+  }
+
+  const [vcpu, ram] = catalog[family][instance];
+
+  $("vcpu").textContent = vcpu;
+  $("ram").textContent = `${ram} GiB`;
+
+  const reserve = number("reserve");
+  $("reserveValue").textContent = `${reserve}%`;
+
+  const allocCpu = actual
+    ? number("allocCpu")
+    : vcpu * 1000 * (1 - reserve / 100);
+
+  const allocMem = actual
+    ? number("allocMem")
+    : ram * 1024 * (1 - reserve / 100);
+
+  const podCpu = number("podCpu");
+  const podMem = number("podMem");
+  const usedCpu = number("usedCpu");
+  const usedMem = number("usedMem");
+  const usedPods = number("usedPods");
+  const maxPods = number("maxPods");
+
+  const values = [
+    allocCpu, allocMem, podCpu, podMem,
+    usedCpu, usedMem, usedPods, maxPods
+  ];
+
+  const valid =
+    values.every(Number.isFinite) &&
+    allocCpu > 0 &&
+    allocMem > 0 &&
+    podCpu > 0 &&
+    podMem > 0 &&
+    usedCpu >= 0 &&
+    usedMem >= 0 &&
+    Number.isInteger(usedPods) &&
+    usedPods >= 0 &&
+    Number.isInteger(maxPods) &&
+    maxPods > 0;
+
+  if (!valid) {
+    $("pods").textContent = "—";
+    $("bottleneck").textContent =
+      "Please enter valid resource values.";
+    $("scheduleResult").textContent =
+      "Cannot simulate with invalid values.";
+    $("cpuFit").textContent = "—";
+    $("memFit").textContent = "—";
+    $("cpuBar").style.width = "0%";
+    $("memBar").style.width = "0%";
+    $("cpuPercent").textContent = "—";
+    $("memPercent").textContent = "—";
+    return;
+  }
+
+  const freeCpu = Math.max(0, allocCpu - usedCpu);
+  const freeMem = Math.max(0, allocMem - usedMem);
+  const freeSlots = Math.max(0, maxPods - usedPods);
+
+  const cpuFit = Math.floor(freeCpu / podCpu);
+  const memFit = Math.floor(freeMem / podMem);
+  const pods = Math.min(cpuFit, memFit, freeSlots);
+
+  $("pods").textContent = pods.toLocaleString();
+  $("cpuFit").textContent = cpuFit.toLocaleString();
+  $("memFit").textContent = memFit.toLocaleString();
+
+  const reasons = [];
+
+  if (freeCpu < podCpu) reasons.push("Insufficient cpu");
+  if (freeMem < podMem) reasons.push("Insufficient memory");
+  if (freeSlots < 1) reasons.push("Too many pods");
+
+  if (reasons.length) {
+    $("scheduleResult").innerHTML =
+      `<strong class="bad">⚠️ Pod cannot schedule on this node</strong>
+       <p>Illustrative FailedScheduling reasons:</p>
+       <code>${reasons.join(", ")}</code>`;
+  } else {
+    $("scheduleResult").innerHTML =
+      `<strong class="ok">✅ Pod fits on this node</strong>
+       <p>Enough CPU, memory, and pod slots remain
+       for one more pod.</p>`;
+  }
+
+  const limiting = [];
+  if (cpuFit === pods) limiting.push("CPU");
+  if (memFit === pods) limiting.push("Memory");
+  if (freeSlots === pods) limiting.push("Pod slots");
+
+  $("bottleneck").textContent =
+    "Limiting resource: " + limiting.join(", ");
+
+  const cpuPercent = Math.min(
+    100,
+    100 * (usedCpu + pods * podCpu) / allocCpu
+  );
+
+  const memPercent = Math.min(
+    100,
+    100 * (usedMem + pods * podMem) / allocMem
+  );
+
+  $("cpuBar").style.width = cpuPercent + "%";
+  $("memBar").style.width = memPercent + "%";
+
+  $("cpuPercent").textContent =
+    cpuPercent.toFixed(1) + "%";
+
+  $("memPercent").textContent =
+    memPercent.toFixed(1) + "%";
+}
+
+function simulateOOM() {
+  const limit = number("limit");
+  const usage = number("usage");
+
+  if (!Number.isFinite(limit) ||
+      !Number.isFinite(usage) ||
+      limit <= 0 || usage < 0) {
+    $("oomResult").textContent =
+      "Enter valid memory values.";
+    return;
+  }
+
+  if (usage > limit) {
+    $("oomResult").innerHTML =
+      `<strong class="bad">💥 OOMKilled risk</strong>
+       <p>Usage exceeds the container memory limit.</p>
+       <code>Possible reason: OOMKilled<br>Exit Code: 137</code>`;
+  } else {
+    $("oomResult").innerHTML =
+      `<strong class="ok">✅ Within memory limit</strong>
+       <p>Simulated usage is below the configured limit.</p>`;
+  }
+}
+
+$("family").addEventListener("change", () => {
+  $("search").value = "";
+  fillInstances();
+});
+
+$("search").addEventListener("input", fillInstances);
+
+[
+  "instance", "mode", "reserve", "allocCpu", "allocMem",
+  "podCpu", "podMem", "usedCpu", "usedMem",
+  "usedPods", "maxPods"
+].forEach(id => {
+  $(id).addEventListener("input", calculate);
+  $(id).addEventListener("change", calculate);
+});
+
+["limit", "usage"].forEach(id => {
+  $(id).addEventListener("input", simulateOOM);
+});
+
+loadInstances();
+simulateOOM();
+</script>
 </body>
 </html>
+

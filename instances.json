@@ -1,33 +1,312 @@
 
 [
   {
+    "instanceType": "t3.small",
+    "vcpus": 2,
+    "memoryMiB": 2048,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon",
+    "generation": "Current",
+    "networkPerformance": "Up to 5 Gbps",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "t3.medium",
+    "vcpus": 2,
+    "memoryMiB": 4096,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon",
+    "generation": "Current",
+    "networkPerformance": "Up to 5 Gbps",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "t3.large",
+    "vcpus": 2,
+    "memoryMiB": 8192,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon",
+    "generation": "Current",
+    "networkPerformance": "Up to 5 Gbps",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "t3.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 16384,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon",
+    "generation": "Current",
+    "networkPerformance": "Up to 5 Gbps",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "t3a.small",
+    "vcpus": 2,
+    "memoryMiB": 2048,
+    "architecture": "x86_64",
+    "processor": "AMD EPYC",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "t3a.medium",
+    "vcpus": 2,
+    "memoryMiB": 4096,
+    "architecture": "x86_64",
+    "processor": "AMD EPYC",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
     "instanceType": "m5.large",
     "vcpus": 2,
-    "memoryMiB": 8192
+    "memoryMiB": 8192,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Platinum",
+    "generation": "Current",
+    "networkPerformance": "Up to 10 Gbps",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
   },
   {
     "instanceType": "m5.xlarge",
     "vcpus": 4,
-    "memoryMiB": 16384
+    "memoryMiB": 16384,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Platinum",
+    "generation": "Current",
+    "networkPerformance": "Up to 10 Gbps",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
   },
   {
     "instanceType": "m5.2xlarge",
     "vcpus": 8,
-    "memoryMiB": 32768
+    "memoryMiB": 32768,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Platinum",
+    "generation": "Current",
+    "networkPerformance": "Up to 10 Gbps",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "m5.4xlarge",
+    "vcpus": 16,
+    "memoryMiB": 65536,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Platinum",
+    "generation": "Current",
+    "networkPerformance": "Up to 10 Gbps",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "m6i.large",
+    "vcpus": 2,
+    "memoryMiB": 8192,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "m6i.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 16384,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
   },
   {
     "instanceType": "m6i.2xlarge",
     "vcpus": 8,
-    "memoryMiB": 32768
+    "memoryMiB": 32768,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
   },
   {
-    "instanceType": "r6i.2xlarge",
+    "instanceType": "m7i.large",
+    "vcpus": 2,
+    "memoryMiB": 8192,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Sapphire Rapids",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "m7i.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 16384,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Sapphire Rapids",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "m7i.2xlarge",
     "vcpus": 8,
-    "memoryMiB": 65536
+    "memoryMiB": 32768,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Sapphire Rapids",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "c5.large",
+    "vcpus": 2,
+    "memoryMiB": 4096,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "c5.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 8192,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "c5.2xlarge",
+    "vcpus": 8,
+    "memoryMiB": 16384,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "c6i.large",
+    "vcpus": 2,
+    "memoryMiB": 4096,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "c6i.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 8192,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
   },
   {
     "instanceType": "c6i.2xlarge",
     "vcpus": 8,
-    "memoryMiB": 16384
+    "memoryMiB": 16384,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "c7i.large",
+    "vcpus": 2,
+    "memoryMiB": 4096,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Sapphire Rapids",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "c7i.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 8192,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Sapphire Rapids",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "r5.large",
+    "vcpus": 2,
+    "memoryMiB": 16384,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Platinum",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "r5.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 32768,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Platinum",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "r6i.large",
+    "vcpus": 2,
+    "memoryMiB": 16384,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "r6i.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 32768,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "r6i.2xlarge",
+    "vcpus": 8,
+    "memoryMiB": 65536,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Ice Lake",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
+  },
+  {
+    "instanceType": "r7i.2xlarge",
+    "vcpus": 8,
+    "memoryMiB": 65536,
+    "architecture": "x86_64",
+    "processor": "Intel Xeon Sapphire Rapids",
+    "generation": "Current",
+    "instanceStorage": "EBS only",
+    "hypervisor": "Nitro"
   }
 ]
+

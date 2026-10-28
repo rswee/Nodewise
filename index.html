@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NodeWise | Kubernetes Capacity Planner</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #f4f5ff;
+      background: #0b1020;
+    }
+    .container { max-width: 1100px; margin: auto; padding: 24px; }
+    header { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 24px; font-weight: 800; }
+    .logo span { color: #8d8aff; }
+    .tag { color: #8ee7c7; font-size: 12px; }
+    .hero { padding: 65px 0 35px; }
+    .hero h1 { font-size: clamp(36px, 6vw, 62px); line-height: 1.1; }
+    .hero h1 span { color: #9a8cff; }
+    .hero p { color: #aab6d0; line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .card {
+      background: #172039;
+      border: 1px solid #303c5b;
+      border-radius: 20px;
+      padding: 25px;
+    }
+    label { display: block; margin: 18px 0 8px; color: #c7d1e8; }
+    select, input[type=number] {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #495675;
+      background: #0c1427;
+      color: white;
+      font-size: 16px;
+    }
+    input[type=range] { width: 100%; accent-color: #9a8cff; }
+    .stats { display: flex; gap: 12px; margin-top: 20px; }
+    .stat { flex: 1; padding: 16px; background: #0c1427; border-radius: 12px; }
+    .stat small { color: #9eacc9; display: block; }
+    .stat strong { font-size: 26px; }
+    .result { font-size: 80px; font-weight: 800; color: #9c96ff; }
+    .badge { display: inline-block; padding: 10px; border-radius: 10px; background: #204443; color: #8fe9ce; }
+    .bar { height: 12px; background: #0c1427; border-radius: 20px; overflow: hidden; }
+    .fill { height: 100%; width: 0; background: linear-gradient(90deg,#647eff,#b18bff); }
+    .hint { color: #9eacc9; font-size: 13px; line-height: 1.6; }
+    footer { margin-top: 50px; color: #8795b1; font-size: 13px; }
+    @media(max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+      .result { font-size: 64px; }
+      .hero { padding-top: 45px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">⬡ Node<span>Wise</span></div>
+      <div class="tag">FREE • OPEN SOURCE</div>
+    </header>
+
+    <section class="hero">
+      <h1>Find the right node.<br><span>Fit more pods.</span></h1>
+      <p>Estimate Kubernetes pod capacity on AWS EC2 instances.
+         No AWS account or credentials required.</p>
+    </section>
+
+    <main class="grid">
+      <section class="card">
+        <h2>⚙️ Configure your node</h2>
+
+        <label for="instance">EC2 instance type</label>
+        <select id="instance">
+          <option value="2,8">t3.large — 2 vCPU / 8 GiB</option>
+          <option value="4,16" selected>m5.xlarge — 4 vCPU / 16 GiB</option>
+          <option value="8,32">m5.2xlarge — 8 vCPU / 32 GiB</option>
+          <option value="8,32">m6i.2xlarge — 8 vCPU / 32 GiB</option>
+          <option value="8,64">r6i.2xlarge — 8 vCPU / 64 GiB</option>
+          <option value="8,16">c6i.2xlarge — 8 vCPU / 16 GiB</option>
+        </select>
+
+        <div class="stats">
+          <div class="stat"><small>vCPUs</small><strong id="vcpu">4</strong></div>
+          <div class="stat"><small>Memory</small><strong id="ram">16 GiB</strong></div>
+        </div>
+
+        <label for="cpu">Pod CPU request (millicores)</label>
+        <input id="cpu" type="number" min="1" value="500">
+
+        <label for="memory">Pod memory request (MiB)</label>
+        <input id="memory" type="number" min="1" value="512">
+
+        <label for="reserve">Illustrative system reserve: <span id="reserveValue">15%</span></label>
+        <input id="reserve" type="range" min="0" max="35" step="5" value="15">
+
+        <p class="hint">The reserve is a simplified estimate, not actual EKS node allocatable capacity.</p>
+      </section>
+
+      <section class="card">
+        <h2>📊 Capacity estimate</h2>
+        <div class="result" id="pods">0</div>
+        <p>Estimated application pods per node</p>
+        <div class="badge" id="bottleneck">Calculating…</div>
+
+        <label>CPU utilization: <span id="cpuPercent">0%</span></label>
+        <div class="bar"><div class="fill" id="cpuBar"></div></div>
+
+        <label>Memory utilization: <span id="memPercent">0%</span></label>
+        <div class="bar"><div class="fill" id="memBar"></div></div>
+
+        <div class="stats">
+          <div class="stat"><small>CPU-based fit</small><strong id="cpuFit">0</strong></div>
+          <div class="stat"><small>Memory-based fit</small><strong id="memFit">0</strong></div>
+        </div>
+
+        <p class="hint">Actual scheduling also depends on max-pods, networking, DaemonSets, existing workloads, and other constraints.</p>
+      </section>
+    </main>
+
+    <footer>NodeWise • Built for DevOps learning • Estimates are not production guarantees</footer>
+  </div>
+
+  <script>
+    const get = id => document.getElementById(id);
+
+    function calculate() {
+      const [vcpu, ram] = get("instance").value.split(",").map(Number);
+      const cpu = Number(get("cpu").value);
+      const memory = Number(get("memory").value);
+      const reserve = Number(get("reserve").value);
+
+      get("vcpu").textContent = vcpu;
+      get("ram").textContent = ram + " GiB";
+      get("reserveValue").textContent = reserve + "%";
+
+      if (!Number.isFinite(cpu) || !Number.isFinite(memory) ||
+          cpu <= 0 || memory <= 0) {
+        get("pods").textContent = "—";
+        get("bottleneck").textContent = "Enter valid positive pod requests";
+        ["cpuFit", "memFit", "cpuPercent", "memPercent"].forEach(id => {
+          get(id).textContent = "—";
+        });
+        get("cpuBar").style.width = "0%";
+        get("memBar").style.width = "0%";
+        return;
+      }
+
+      const cpuCapacity = vcpu * 1000 * (1 - reserve / 100);
+      const memCapacity = ram * 1024 * (1 - reserve / 100);
+
+      const cpuFit = Math.floor(cpuCapacity / cpu);
+      const memFit = Math.floor(memCapacity / memory);
+      const pods = Math.min(cpuFit, memFit);
+
+      const cpuPercent = 100 * pods * cpu / (vcpu * 1000);
+      const memPercent = 100 * pods * memory / (ram * 1024);
+
+      get("pods").textContent = pods.toLocaleString();
+      get("cpuFit").textContent = cpuFit.toLocaleString();
+      get("memFit").textContent = memFit.toLocaleString();
+
+      get("bottleneck").textContent =
+        cpuFit === memFit ? "⚖️ CPU and memory equally limiting" :
+        cpuFit < memFit ? "⚡ CPU is the bottleneck" :
+        "🧠 Memory is the bottleneck";
+
+      get("cpuPercent").textContent = cpuPercent.toFixed(1) + "%";
+      get("memPercent").textContent = memPercent.toFixed(1) + "%";
+      get("cpuBar").style.width = cpuPercent + "%";
+      get("memBar").style.width = memPercent + "%";
+    }
+
+    ["instance", "cpu", "memory", "reserve"].forEach(id => {
+      get(id).addEventListener("input", calculate);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>

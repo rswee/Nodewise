@@ -1,0 +1,33 @@
+
+[
+  {
+    "instanceType": "m5.large",
+    "vcpus": 2,
+    "memoryMiB": 8192
+  },
+  {
+    "instanceType": "m5.xlarge",
+    "vcpus": 4,
+    "memoryMiB": 16384
+  },
+  {
+    "instanceType": "m5.2xlarge",
+    "vcpus": 8,
+    "memoryMiB": 32768
+  },
+  {
+    "instanceType": "m6i.2xlarge",
+    "vcpus": 8,
+    "memoryMiB": 32768
+  },
+  {
+    "instanceType": "r6i.2xlarge",
+    "vcpus": 8,
+    "memoryMiB": 65536
+  },
+  {
+    "instanceType": "c6i.2xlarge",
+    "vcpus": 8,
+    "memoryMiB": 16384
+  }
+]
